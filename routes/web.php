@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('principal');
 });
+
+Route::get('/Empresa', 'EmpresaController@index');
+Route::post('/Empresa/store', 'EmpresaController@store');
+Route::put('/Empresa/update', 'EmpresaController@update');
+Route::put('/Empresa/desactivate', 'EmpresaController@desactivate');
+Route::put('/Empresa/activate', 'EmpresaController@activate');

@@ -14459,7 +14459,6 @@ module.exports = __webpack_require__(12);
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -14476,10 +14475,13 @@ window.Vue = __webpack_require__(35);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', __webpack_require__(39));
+Vue.component("example-component", __webpack_require__(39));
 
 var app = new Vue({
-  el: '#app'
+    el: "#contenido",
+    data: {
+        menu: 0
+    }
 });
 
 /***/ }),
@@ -49241,7 +49243,7 @@ var normalizeComponent = __webpack_require__(40)
 /* script */
 var __vue_script__ = __webpack_require__(41)
 /* template */
-var __vue_template__ = __webpack_require__(42)
+var __vue_template__ = __webpack_require__(48)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -49410,44 +49412,1222 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+    components: {},
+    data: function data() {
+        return {
+            tipoAccion: 1,
+            tituloModal: "Registro de Empresa",
+            errors: [],
+            pagination: {
+                total: 0,
+                current_page: 0,
+                per_page: 0,
+                last_page: 0,
+                from: 0,
+                to: 0
+            },
+            offset: 3,
+            /* Nuevas Variables */
+            arregloEmpresa: [],
+            razonSocial: "",
+            ruc: "",
+            facebook: "",
+            instagram: "",
+            whatsapp: "",
+            correo: "",
+            idEmpresaSeleccionada: "",
+            criterio: "Seleccione",
+            buscar: ""
+            //este arreglo va a ser llenado por obtener()
+
+            /* Fin de las Nuevas Variables */
+        };
+    },
+
+    computed: {
+        isActived: function isActived() {
+            return this.pagination.current_page;
+        },
+        pagesNumber: function pagesNumber() {
+            if (!this.pagination.to) {
+                return [];
+            }
+            var from = this.pagination.current_page - this.offset;
+            if (from < 1) {
+                from = 1;
+            }
+            var to = from + this.offset * 2;
+            if (to >= this.pagination.last_page) {
+                to = this.pagination.last_page;
+            }
+            var pagesArrays = [];
+            while (from <= to) {
+                pagesArrays.push(from);
+                from++;
+            }
+            return pagesArrays;
+        }
+    },
+    methods: {
+        cambiarPagina: function cambiarPagina(page) {
+            var me = this;
+            me.pagination.current_page = page;
+            me.listarEmpresa(page, this.buscar);
+        },
+
+        numCero: function numCero(lengthCaracter, total) {
+            var resta = total - lengthCaracter;
+            var count = 0;
+            var copy = "0";
+            var result = "";
+            if (resta != 0) {
+                while (count != resta) {
+                    result = result + copy;
+                    count++;
+                }
+            }
+            return result;
+        },
+        cargarDatosEmpresa: function cargarDatosEmpresa(DataEmpresa) {
+            this.tipoAccion = 2;
+            this.tituloModal = "Actualizar Empresa";
+            this.idEmpresaSeleccionada = DataEmpresa["idEmpresa"];
+            /* console.log(this.idEmpresaSeleccionada); */
+            this.razonSocial = DataEmpresa["razonSocial"];
+            this.ruc = DataEmpresa["ruc"];
+            this.correo = DataEmpresa["correo"];
+            this.facebook = DataEmpresa["urlFacebook"];
+            this.instagram = DataEmpresa["urlInstagram"];
+            this.whatsapp = DataEmpresa["urlWhatsApp"];
+        },
+        actualizarEmpresa: function actualizarEmpresa() {
+            var _this = this;
+
+            var me = this;
+            axios.put("/Empresa/update", {
+                idEmpresa: me.idEmpresaSeleccionada,
+                razonSocial: me.razonSocial,
+                ruc: me.ruc,
+                urlFacebook: me.facebook,
+                urlInstagram: me.instagram,
+                urlWhatsApp: me.whatsapp,
+                correo: me.correo
+            }).then(function (response) {
+                toastr.success("Empresa Actualizada.");
+                me.cerrarModal();
+                me.listarEmpresa(1, _this.buscar);
+            }).catch(function (error) {
+                /* this.errors = error.response.data.errors; */
+                console.log(error);
+            });
+        },
+        registrarEmpresa: function registrarEmpresa() {
+            var _this2 = this;
+
+            this.tipoAccion = 1;
+            var me = this;
+            axios.post("/Empresa/store", {
+                razonSocial: me.razonSocial,
+                ruc: me.ruc,
+                urlFacebook: me.facebook,
+                urlInstagram: me.instagram,
+                urlWhatsApp: me.whatsapp,
+                correo: me.correo
+            }).then(function (response) {
+                toastr.success("Empresa Registrada.");
+                me.cerrarModal();
+                me.listarEmpresa(1, _this2.buscar);
+            }).catch(function (error) {
+                _this2.errors = error.response.data.errors;
+                /*   console.log(error); */
+            });
+        },
+        cerrarModal: function cerrarModal() {
+            $("#modalEmpresa").modal("hide");
+            $("body").removeClass("modal-open");
+            $(".modal-backdrop").remove();
+        },
+        desactivarEmpresa: function desactivarEmpresa(idEmpresa) {
+            var _this3 = this;
+
+            var swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn ml-1 btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+            swalWithBootstrapButtons.fire({
+                title: "¿Está seguro de desactivar esta Empresa?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.value) {
+                    var me = _this3;
+                    axios.put("/Empresa/desactivate", {
+                        idEmpresa: idEmpresa
+                    }).then(function (response) {
+                        me.listarEmpresa(1, me.buscar);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                    swalWithBootstrapButtons.fire("Descativada", "La Empresa ha sido desactivada exitosamente.", "success");
+                } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel) {}
+            });
+        },
+        activarEmpresa: function activarEmpresa(idEmpresa) {
+            var _this4 = this;
+
+            var swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn ml-1 btn-success",
+                    cancelButton: "btn btn-danger"
+                },
+                buttonsStyling: false
+            });
+            swalWithBootstrapButtons.fire({
+                title: "¿Está seguro de activar esta Empresa?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Aceptar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.value) {
+                    var me = _this4;
+                    axios.put("/Empresa/activate", {
+                        idEmpresa: idEmpresa
+                    }).then(function (response) {
+                        me.listarEmpresa(1, me.buscar);
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                    swalWithBootstrapButtons.fire("Activada", "La Empresa ha sido activada exitosamente.", "success");
+                } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel) {}
+            });
+        },
+        asignarCriterio: function asignarCriterio(texto) {
+            console.log("activa");
+            this.criterio = texto;
+        },
+        listarEmpresa: function listarEmpresa(page, buscar) {
+            var _this5 = this;
+
+            var url = "/Empresa?page=" + page + "&textoBuscar=" + buscar + "&criterio=" + this.criterio;
+            axios.get(url).then(function (response) {
+                var respuesta = response.data;
+                _this5.arregloEmpresa = respuesta.empresa.data;
+                _this5.pagination = respuesta.pagination;
+                console.log(_this5.arregloEmpresa);
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        limpiarModal: function limpiarModal() {
+            this.tipoAccion = 1;
+            this.errors = [];
+            this.razonSocial = "";
+            this.ruc = "";
+            this.facebook = "";
+            this.instagram = "";
+            this.whatsapp = "";
+            this.correo = "";
+        }
+    },
     mounted: function mounted() {
-        console.log('Component mounted.');
+        this.listarEmpresa(1, "");
     }
 });
 
 /***/ }),
-/* 42 */
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("main", { staticClass: "main" }, [
+    _c("div", { staticClass: "container-fluid mt-3" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-body" }, [
+          _c("div", { staticClass: "row mb-1" }, [
+            _c("div", { staticClass: "col-md-6" }, [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "d-flex justify-content-between align-items-center"
+                },
+                [
+                  _c("h4", [_vm._v("Gestión de Empresas")]),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-success nuevo",
+                      attrs: {
+                        "data-toggle": "modal",
+                        "data-target": "#modalEmpresa"
+                      },
+                      on: {
+                        click: function($event) {
+                          return _vm.limpiarModal()
+                        }
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                Nueva Empresa\n                            "
+                      )
+                    ]
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-md-6" }, [
+              _c("div", { staticClass: "input-group" }, [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.criterio,
+                        expression: "criterio"
+                      }
+                    ],
+                    staticClass: "form-control col-md-3",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.criterio = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      }
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "Seleccione" } }, [
+                      _vm._v("Seleccione")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "razonSocial" } }, [
+                      _vm._v("Nombre")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "ruc" } }, [_vm._v("RUC")])
+                  ]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.buscar,
+                      expression: "buscar"
+                    }
+                  ],
+                  staticClass: "form-control document-nice",
+                  attrs: { type: "text", placeholder: "Buscar aqui" },
+                  domProps: { value: _vm.buscar },
+                  on: {
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      return _vm.listarEmpresa(1, _vm.buscar)
+                    },
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.buscar = $event.target.value
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary btn-border",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.listarEgreso(
+                          1,
+                          _vm.buscar,
+                          _vm.mes,
+                          _vm.anho
+                        )
+                      }
+                    }
+                  },
+                  [
+                    _c("i", { staticClass: "fa fa-search" }),
+                    _vm._v(" Buscar\n                            ")
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _vm._m(0)
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row text-center" }, [
+            _c("div", { staticClass: "col-md-12 table-responsive" }, [
+              _c(
+                "table",
+                {
+                  staticClass:
+                    "table table-bordered table-striped table-sm text-center"
+                },
+                [
+                  _vm._m(1),
+                  _vm._v(" "),
+                  _c(
+                    "tbody",
+                    _vm._l(_vm.arregloEmpresa, function(empresa) {
+                      return _c("tr", { key: empresa.idEmpresa }, [
+                        _c(
+                          "td",
+                          [
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btns btn-warning",
+                                attrs: {
+                                  type: "button",
+                                  "data-toggle": "modal",
+                                  "data-target": "#modalEmpresa"
+                                },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.cargarDatosEmpresa(empresa)
+                                  }
+                                }
+                              },
+                              [_c("i", { staticClass: "feather  icon-edit" })]
+                            ),
+                            _vm._v(" "),
+                            [
+                              !empresa.vigencia
+                                ? _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btns btn-success",
+                                      attrs: { type: "button" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.activarEmpresa(
+                                            empresa.idEmpresa
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass:
+                                          "feather  icon-check-circle"
+                                      })
+                                    ]
+                                  )
+                                : _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btns btn-danger",
+                                      attrs: { type: "button" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.desactivarEmpresa(
+                                            empresa.idEmpresa
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _c("i", {
+                                        staticClass: "feather icon-x-circle"
+                                      })
+                                    ]
+                                  )
+                            ]
+                          ],
+                          2
+                        ),
+                        _vm._v(" "),
+                        _c("td", {
+                          domProps: { textContent: _vm._s(empresa.razonSocial) }
+                        }),
+                        _vm._v(" "),
+                        _c("td", {
+                          domProps: { textContent: _vm._s(empresa.ruc) }
+                        }),
+                        _vm._v(" "),
+                        _c("td", {
+                          domProps: { textContent: _vm._s(empresa.correo) }
+                        }),
+                        _vm._v(" "),
+                        _c("td", [
+                          empresa.vigencia
+                            ? _c(
+                                "span",
+                                {
+                                  staticClass: "badge badge-pill badge-success"
+                                },
+                                [_vm._v("Habilitada")]
+                              )
+                            : _c(
+                                "span",
+                                {
+                                  staticClass: "badge badge-pill badge-danger"
+                                },
+                                [_vm._v("Deshabilitada")]
+                              )
+                        ])
+                      ])
+                    }),
+                    0
+                  )
+                ]
+              )
+            ])
+          ]),
+          _vm._v(" "),
+          _c("nav", [
+            _c(
+              "ul",
+              { staticClass: "pagination mb-0" },
+              [
+                _vm.pagination.current_page > 1
+                  ? _c("li", { staticClass: "page-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.cambiarPagina(
+                                _vm.pagination.current_page - 1
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v("Ant")]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.pagesNumber, function(page) {
+                  return _c(
+                    "li",
+                    {
+                      key: page,
+                      staticClass: "page-item",
+                      class: [page == _vm.isActived ? "active" : ""]
+                    },
+                    [
+                      _c("a", {
+                        staticClass: "page-link",
+                        attrs: { href: "#" },
+                        domProps: { textContent: _vm._s(page) },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.cambiarPagina(page)
+                          }
+                        }
+                      })
+                    ]
+                  )
+                }),
+                _vm._v(" "),
+                _vm.pagination.current_page < _vm.pagination.last_page
+                  ? _c("li", { staticClass: "page-item" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "page-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.cambiarPagina(
+                                _vm.pagination.current_page + 1
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v("Sig")]
+                      )
+                    ])
+                  : _vm._e()
+              ],
+              2
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "modal fade",
+          attrs: {
+            tabindex: "-1",
+            id: "modalEmpresa",
+            role: "dialog",
+            "aria-labelledby": "myModalLabel",
+            "aria-hidden": "true"
+          }
+        },
+        [
+          _c("div", { staticClass: "modal-dialog modal-primary modal-lg" }, [
+            _c("div", { staticClass: "modal-content mods" }, [
+              _c("div", { staticClass: "modal-header modle" }, [
+                _c("h4", {
+                  staticClass: "modal-title",
+                  domProps: { textContent: _vm._s(_vm.tituloModal) }
+                }),
+                _vm._v(" "),
+                _vm._m(2)
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-body" }, [
+                _c("div", { staticClass: "row mb-1" }, [
+                  _c("div", { staticClass: "col-md-8" }, [
+                    _c("p", { staticClass: "mb-0" }, [_vm._v("Razón Social:")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.razonSocial,
+                          expression: "razonSocial"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.razonSocial },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.razonSocial = $event.target.value
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _vm.errors.razonSocial
+                      ? _c("small", {
+                          staticClass: "text-danger",
+                          domProps: {
+                            textContent: _vm._s(_vm.errors.razonSocial[0])
+                          }
+                        })
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-md-4" }, [
+                    _c("p", { staticClass: "mb-0" }, [_vm._v("Ruc:")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.ruc,
+                          expression: "ruc"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.ruc },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.ruc = $event.target.value
+                        }
+                      }
+                    })
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-md-8 mb-1" }, [
+                    _c("div", { staticClass: "mb-1" }, [
+                      _c("p", { staticClass: "mb-0" }, [_vm._v("Correo:")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.correo,
+                            expression: "correo"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text" },
+                        domProps: { value: _vm.correo },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.correo = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "mb-1" }, [
+                      _c("p", { staticClass: "mb-0" }, [_vm._v("Facebook:")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.facebook,
+                            expression: "facebook"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text" },
+                        domProps: { value: _vm.facebook },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.facebook = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "mb-1" }, [
+                      _c("p", { staticClass: "mb-0" }, [_vm._v("Instagram:")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.instagram,
+                            expression: "instagram"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text" },
+                        domProps: { value: _vm.instagram },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.instagram = $event.target.value
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "mb-1" }, [
+                      _c("p", { staticClass: "mb-0" }, [_vm._v("WhatsApp:")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.whatsapp,
+                            expression: "whatsapp"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text" },
+                        domProps: { value: _vm.whatsapp },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.whatsapp = $event.target.value
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(3)
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "modal-footer" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btns btn-secondary",
+                    attrs: { type: "submit", "data-dismiss": "modal" }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Cerrar\n                        "
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _vm.tipoAccion == 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btns btn-primary",
+                        attrs: { type: "submit" },
+                        on: {
+                          click: function($event) {
+                            return _vm.registrarEmpresa()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                            Registrar\n                        "
+                        )
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.tipoAccion == 2
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btns btn-primary",
+                        attrs: { type: "submit" },
+                        on: {
+                          click: function($event) {
+                            return _vm.actualizarEmpresa()
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                            Actualizar\n                        "
+                        )
+                      ]
+                    )
+                  : _vm._e()
+              ])
+            ])
+          ])
+        ]
+      )
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card card-default" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
-            ])
-          ])
-        ])
+    return _c("div", { staticClass: "col-md-12" }, [_c("hr")])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { staticClass: "text-center" }, [_vm._v("Opciones")]),
+        _vm._v(" "),
+        _c("th", { staticClass: "text-center" }, [
+          _vm._v(
+            "\n                                        Razon Social\n                                    "
+          )
+        ]),
+        _vm._v(" "),
+        _c("th", { staticClass: "text-center" }, [_vm._v("RUC")]),
+        _vm._v(" "),
+        _c("th", { staticClass: "text-center" }, [_vm._v("Correo")]),
+        _vm._v(" "),
+        _c("th", { staticClass: "text-center" }, [_vm._v("Vigencia")])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-4 d-flex flex-wrap" }, [
+      _c("label", [
+        _vm._v(
+          "\n                                    Imágen\n                                "
+        )
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        attrs: {
+          type: "file",
+          id: "imagen",
+          name: "avatar",
+          accept: "image/png, image/jpeg"
+        }
+      })
     ])
   }
 ]
