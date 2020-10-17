@@ -111,7 +111,7 @@ class empresaController extends Controller
         return response()->json($empresa, 200);
     }
 
-    public function cambiarEstado($id)
+    public function entidadVigencia($id)
     {
         $empresa = empresa::findOrFail($id);
         $empresa->Vigencia = !$empresa->Vigencia;

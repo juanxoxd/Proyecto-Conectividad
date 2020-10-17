@@ -133,7 +133,8 @@
               :loading="tableLoading"
               :headers="headers"
               :items="entidades"
-              :search="search">
+              :search="search"
+              >
               <template v-slot:[`item`]="{ item }">
                 <tr v-bind:class="item.Vigencia?'activo':'desactivo'">
                   <td>{{ item.indice }}</td>
@@ -141,7 +142,7 @@
                   <td>{{ item.Siglas }}</td>
                   <td>
                     <v-icon class="mr-2" @click="showEditEntidad(item)">mdi-pencil</v-icon>
-                    <v-icon class="mr-2" @click="cambiarEstadoEntidad(item)" :color="item.Vigencia?'error':'success'">
+                    <v-icon class="mr-2" @click="entidadVigenciaEntidad(item)" :color="item.Vigencia?'error':'success'">
                       {{item.Vigencia? "mdi-close-circle-outline": "mdi-checkbox-marked-circle-outline"}}
                     </v-icon>
                   </td>
@@ -156,7 +157,8 @@
 </template>
 
 <script>
-import { del, get, enviarConArchivos, patch } from "../api/api";
+import { del, get, put, post, patch } from "../api/api";
+import Swal from "sweetalert2";
 
 export default {
   components: {},
@@ -177,11 +179,12 @@ export default {
       },
       headers: [
         {
-          text: "#",
+          text: "N°",
           align: "start",
           sortable: false,
           value: "indice",
           width: "10%",
+          
         },
         { text: "Siglas" ,value: "Siglas", width: "20%"},
         { text: "Razon Social", value: "RazonSocial", width: "30%" },        
@@ -196,7 +199,7 @@ export default {
         {
           name: "Eliminar",
           icon: "mdi-close-circle-outline",
-          function: this.cambiarEstadoEntidad,
+          function: this.entidadVigenciaEntidad,
         },
       ],
       entidades: [],
@@ -228,23 +231,37 @@ export default {
     },
     executeEventClick() {
       if (this.edit === false) {
-        this.registerEmpresa();
+        this.registerEntidad();
       } else {
-        this.editEmpresa();
+        this.editEntidad();
       }
     },
-    assembleEmpresa() {
-      let form = new FormData();
-      form.append("RazonSocial", this.RazonSocial);
-      form.append("Siglas", this.Siglas);
-      return form;
+    assembleEntidad() {
+      // let form = new FormData();
+      // form.append("RazonSocial", this.RazonSocial);
+      // form.append("Siglas", this.Siglas);
+      // return form;
+      console.log(this.Codigo);
+      return {
+        Codigo: this.Codigo,
+        RazonSocial: this.RazonSocial,
+        Siglas: this.Siglas,
+      };
     },
 
-    registerEmpresa() {
+    registerEntidad() {
       if (this.valid == false) return;
       this.saveLoading = true;
-      enviarConArchivos("entidadesbancarias", this.assembleEmpresa()).then(
+      post("entidadesbancarias", this.assembleEntidad()).then(
         () => {
+          Swal.fire({
+            position: "top-center",
+            title: "Sistema",
+            text: "Entidad registrada !",
+            icon: "success",
+            confirmButtonText: "Ok",
+            timer: 2500,
+          });
           this.saveLoading = false;
           this.dialogEjemplo = false;
           this.fetchData();
@@ -253,14 +270,29 @@ export default {
         }
       );
     },
-    editEmpresa() {
+    // putNew(){
+    //   let form = new FormData();
+    //   form.append("RazonSocial", this.RazonSocial);
+    //   form.append("Siglas", this.Siglas);
+    //   form.append("id", this.editId);
+    //   return form;
+    // },
+    editEntidad() {
       if (this.valid == false) return;
       this.saveLoading = true;
-      enviarConArchivos(
+      put(
         "entidadesbancarias/" + this.editId,
-        this.assembleEmpresa()
+        this.assembleEntidad()
       )
         .then(() => {
+          Swal.fire({
+            position: "top-center",
+            title: "Sistema",
+            text: "Entidad actualizada !",
+            icon: "success",
+            confirmButtonText: "Ok",
+            timer: 2500,
+          });
           this.saveLoading = false;
           this.editId = null;
           this.dialogEjemplo = false;
@@ -294,7 +326,7 @@ export default {
           this.alert = true;
         });
     },
-    cambiarEstadoEntidad(empresa) {
+    entidadVigenciaEntidad(empresa) {
       patch("entidadBancaria/" + empresa.Codigo)
         .then(() => {
           this.fetchData();
@@ -328,3 +360,12 @@ export default {
   },
 };
 </script>
+<style>
+  tr.desactivo{
+    color: red;
+  }
+  th{
+    background: #01579B;
+    color: white;
+  }
+</style>

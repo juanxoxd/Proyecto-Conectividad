@@ -75,7 +75,7 @@ class EntidadBancariaController extends Controller
         $entidadBancaria->save();
         return response()->json($entidadBancaria, 200);
     }
-    public function cambiarEstado($id)
+    public function entidadVigencia($id)
     {
         $empresa = entidadBancaria::findOrFail($id);
         $empresa->Vigencia = !$empresa->Vigencia;

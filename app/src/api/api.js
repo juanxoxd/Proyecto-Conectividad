@@ -10,11 +10,24 @@ export async function get(peticion) {
   return respuesta.json();
 }
 
+export async function putNew(peticion, datos) {
+  let respuesta = await fetch(url + peticion, {
+    method: "PUT",
+    body: datos,
+    headers: {
+      Authorization: await getToken(),
+    },
+  });
+  if (!respuesta.ok) throw new Error(respuesta.text);
+  return respuesta.json();
+}
+
 async function call(peticion, datos, method) {
   let respuesta = await fetch(url + peticion, {
     method,
     body: JSON.stringify(datos),
     headers: {
+      "Content-Type": "application/json",
       Authorization: await getToken(),
     },
   });
@@ -51,7 +64,6 @@ export async function enviarConArchivos(peticion, datos) {
     },
   });
   if (!respuesta.ok) throw new Error(respuesta.text);
-
   return respuesta.json();
 }
 

@@ -203,7 +203,7 @@
                   <v-icon class="mr-2" @click="verEmpresa(item)"
                     >mdi-eye</v-icon
                   >
-                  <v-icon class="mr-2" @click="cambiarEstadoEmpresa(item)">{{
+                  <v-icon class="mr-2" @click="entidadVigenciaEmpresa(item)">{{
                     item.Vigencia
                       ? "mdi-do-not-disturb"
                       : "mdi-check-box-outline"
@@ -387,7 +387,7 @@ export default {
           this.alert = true;
         });
     },
-    cambiarEstadoEmpresa(empresa) {
+    entidadVigenciaEmpresa(empresa) {
       patch("empresa/" + empresa.Codigo)
         .then(() => {
           this.$refs.empresaTable.fetchData();
