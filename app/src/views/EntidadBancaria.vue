@@ -52,7 +52,7 @@
                 <v-text-field
                   :disabled="ver"
                   v-model="RazonSocial"
-                  :rules="[fieldRules.required]"
+                  :rules="[fieldRules.required, fieldRules.validateRazonSocial]"
                   label="Razón Social"
                   prepend-icon="mdi-domain"
                   required
@@ -62,7 +62,7 @@
                 <v-text-field
                   :disabled="ver"
                   v-model="Siglas"
-                  :rules="[fieldRules.required]"
+                  :rules="[fieldRules.required, fieldRules.validateSiglas]"
                   label="Siglas Entidad"
                   maxlength="11"
                   prepend-icon="mdi-domain"
@@ -102,19 +102,56 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-tabs>
+    <!-- <v-tabs>
       <v-tab>Lista</v-tab>
 
       <v-tab-item>
-        <tables-mostrar
+        <mostrar-entidades
           :headers="headers"
           :options="options"
           :withOptions="true"
           ref="empresaTable"
-          entity="tablaEntidadBancaria"
+          entity="tablaentidadbancaria"
         />
       </v-tab-item>
-    </v-tabs>
+    </v-tabs> -->
+    <v-row class="justify-center">
+      <v-col cols="11">
+        <v-card>
+          <v-card-title>
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Buscar"
+              single-line
+              hide-details
+            ></v-text-field>
+          </v-card-title>
+          <v-card-text>
+            <v-data-table
+              :loading="tableLoading"
+              :headers="headers"
+              :items="entidades"
+              :search="search">
+              <template v-slot:[`item`]="{ item }">
+                <tr v-bind:class="item.Vigencia?'activo':'desactivo'">
+                  <td>{{ item.indice }}</td>
+                  <td>{{ item.RazonSocial }}</td>
+                  <td>{{ item.Siglas }}</td>
+                  <td>
+                    <v-icon class="mr-2" @click="showEditEntidad(item)">mdi-pencil</v-icon>
+                    <v-icon class="mr-2" @click="cambiarEstadoEntidad(item)" :color="item.Vigencia?'error':'success'">
+                      {{item.Vigencia? "mdi-close-circle-outline": "mdi-checkbox-marked-circle-outline"}}
+                    </v-icon>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-main>
 </template>
 
@@ -122,11 +159,10 @@
 import { del, get, enviarConArchivos, patch } from "../api/api";
 
 export default {
-  components: {
-    TablesMostrar: () => import("../components/TablesMostrar"),
-  },
+  components: {},
   data() {
     return {
+      tableLoading: true,
       edit: false,
       ver: false,
       alert: false,
@@ -135,10 +171,8 @@ export default {
       dialogEjemplo: false,
       fieldRules: {
         required: (v) => !!v || "Campo requerido",
-        email: (v) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(v) || "Correo electrónico incorrecto.";
-        },
+        validateRazonSocial: (v) => (v.length > 7) || "La Razón Social debe contener al menos 7 caracteres",
+        validateSiglas: (v) => (v.length > 2) || "La Razón Social debe contener al menos 2 caracteres",
         validateRuc: (v) => v.length == 11 || "RUC incorrecto.",
       },
       headers: [
@@ -157,12 +191,12 @@ export default {
         {
           name: "Editar",
           icon: "mdi-pencil",
-          function: this.showEditEmpresa,
+          function: this.showEditEntidad,
         },
         {
           name: "Eliminar",
-          icon: "mdi-delete",
-          function: this.cambiarEstadoEmpresa,
+          icon: "mdi-close-circle-outline",
+          function: this.cambiarEstadoEntidad,
         },
       ],
       entidades: [],
@@ -174,6 +208,13 @@ export default {
     };
   },
   methods: {
+    fetchData() {
+      this.tableLoading = true;
+      get("tablaentidadbancaria").then((data) => {
+        this.tableLoading = false;
+        this.entidades = data;
+      });
+    },
     validate() {
       this.$refs.form.validate();
     },
@@ -202,11 +243,11 @@ export default {
     registerEmpresa() {
       if (this.valid == false) return;
       this.saveLoading = true;
-      enviarConArchivos("entidadesBancarias", this.assembleEmpresa()).then(
+      enviarConArchivos("entidadesbancarias", this.assembleEmpresa()).then(
         () => {
           this.saveLoading = false;
           this.dialogEjemplo = false;
-          this.$refs.empresaTable.fetchData();
+          this.fetchData();
           this.limpiar();
           this.actualizarEmpresas();
         }
@@ -216,24 +257,24 @@ export default {
       if (this.valid == false) return;
       this.saveLoading = true;
       enviarConArchivos(
-        "entidadesBancarias/" + this.editId,
+        "entidadesbancarias/" + this.editId,
         this.assembleEmpresa()
       )
         .then(() => {
           this.saveLoading = false;
           this.editId = null;
           this.dialogEjemplo = false;
-          this.$refs.empresaTable.fetchData();
+          this.fetchData();
           this.limpiar();
         })
         .catch(() => {
           this.alert = true;
         });
     },
-    showEditEmpresa(empresa) {
+    showEditEntidad(entidad) {
       this.edit = true;
-      this.editId = empresa.Codigo;
-      this.mostrarEmpresa(empresa.Codigo).then(() => {
+      this.editId = entidad.Codigo;
+      this.mostrarEmpresa(entidad.Codigo).then(() => {
         this.dialogEjemplo = true;
       });
     },
@@ -253,10 +294,10 @@ export default {
           this.alert = true;
         });
     },
-    cambiarEstadoEmpresa(empresa) {
+    cambiarEstadoEntidad(empresa) {
       patch("entidadBancaria/" + empresa.Codigo)
         .then(() => {
-          this.$refs.empresaTable.fetchData();
+          this.fetchData();
           this.actualizarEmpresas();
         })
         .catch(() => {
@@ -264,17 +305,17 @@ export default {
         });
     },
     actualizarEmpresas() {
-      get("tablaEntidadBancaria").then((data) => {
+      get("tablaentidadbancaria").then((data) => {
         this.entidades = data;
       });
     },
     async mostrarEmpresa(codigo) {
-      const empresa = await get("entidadesBancarias/" + codigo);
+      const empresa = await get("entidadesbancarias/" + codigo);
       this.Siglas = empresa.Siglas;
       this.RazonSocial = empresa.RazonSocial;
     },
     mostrarEntidad() {
-      get("tablaEntidadBancaria").then((data) => {
+      get("tablaentidadbancaria").then((data) => {
         this.entidades = data;
       });
     },
@@ -282,12 +323,8 @@ export default {
   mounted() {
     this.mostrarEntidad();
   },
+  created() {    
+    this.fetchData();
+  },
 };
 </script>
-
-<style>
-  tr.desactivo{
-    background-color: rgb(165, 93, 88);
-    color: silver;
-  }
-</style>

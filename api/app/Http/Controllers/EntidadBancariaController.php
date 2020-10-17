@@ -17,12 +17,12 @@ class EntidadBancariaController extends Controller
             ->get();
         return response()->json($entidadBancaria, 200);
     }
-    public function mostrarEntidadesBancarias()
+    public function mostrarentidadesbancarias()
     {
         return entidadBancaria::all();
     }
 
-    public function tablaEntidadBancaria()
+    public function tablaentidadbancaria()
     {
         $entidadBancaria = entidadBancaria::all('Codigo', 'RazonSocial', 'Siglas','Vigencia');
         $count  = 1;

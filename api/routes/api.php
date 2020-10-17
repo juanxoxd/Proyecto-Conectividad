@@ -31,10 +31,10 @@ Route::patch('empresa/{id}', 'empresaController@cambiarEstado')->middleware('tok
 // *********************************************************
 */
 //CRUD DE ENTIDAD BANCARIA
-Route::get('entidadesBancarias', 'entidadBancariaController@inicio')->middleware('token');
-Route::get('entidadMostrar', 'entidadBancariaController@entidadMostrar')->middleware('token');
-Route::get('tablaEntidadBancaria', 'entidadBancariaController@tablaEntidadBancaria')->middleware('token');
-Route::get('entidadesBancarias/{id}', 'entidadBancariaController@mostrar')->middleware('token');
-Route::post('entidadesBancarias', 'entidadBancariaController@registrar')->middleware('token');
-Route::post('entidadesBancarias/{id}', 'entidadBancariaController@actualizar')->middleware('token');
+Route::get('entidadesbancarias', 'entidadBancariaController@inicio')->middleware('token');
+Route::get('entidadmostrar', 'entidadBancariaController@entidadmostrar')->middleware('token');
+Route::get('tablaentidadbancaria', 'entidadBancariaController@tablaentidadbancaria')->middleware('token');
+Route::get('entidadesbancarias/{id}', 'entidadBancariaController@mostrar')->middleware('token');
+Route::post('entidadesbancarias', 'entidadBancariaController@registrar')->middleware('token');
+Route::post('entidadesbancarias/{id}', 'entidadBancariaController@actualizar')->middleware('token');
 Route::patch('entidadBancaria/{id}', 'entidadBancariaController@cambiarEstado')->middleware('token');

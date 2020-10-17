@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { get } from "../api/api";
+  import { get } from "../api/api";
 export default {
   props: ["entity", "headers", "options", "withOptions"],
   data() {

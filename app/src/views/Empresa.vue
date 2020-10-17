@@ -286,7 +286,7 @@ export default {
         },
         {
           name: "Eliminar",
-          icon: "mdi-delete",
+          icon: "mdi-pencil",
           function: this.deleteEmpresa,
         },
       ],
