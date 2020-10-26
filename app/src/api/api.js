@@ -10,18 +10,6 @@ export async function get(peticion) {
   return respuesta.json();
 }
 
-export async function putNew(peticion, datos) {
-  let respuesta = await fetch(url + peticion, {
-    method: "PUT",
-    body: datos,
-    headers: {
-      Authorization: await getToken(),
-    },
-  });
-  if (!respuesta.ok) throw new Error(respuesta.text);
-  return respuesta.json();
-}
-
 async function call(peticion, datos, method) {
   let respuesta = await fetch(url + peticion, {
     method,
@@ -31,7 +19,11 @@ async function call(peticion, datos, method) {
       Authorization: await getToken(),
     },
   });
-  if (!respuesta.ok) throw new Error(respuesta.text);
+
+  /* if (!respuesta.ok) throw new Error(respuesta.text); */
+  if (!respuesta.ok){
+    throw new Error(respuesta.status);
+  }
   return respuesta.json();
 }
 
@@ -55,6 +47,8 @@ export async function del(peticion) {
     },
   });
 }
+
+   
 export async function enviarConArchivos(peticion, datos) {
   let respuesta = await fetch(url + peticion, {
     method: "POST",
@@ -64,11 +58,12 @@ export async function enviarConArchivos(peticion, datos) {
     },
   });
   if (!respuesta.ok) throw new Error(respuesta.text);
+
   return respuesta.json();
 }
 
 export async function getToken() {
-
+  console.log(await fetch(token));
   let respuesta = await fetch(token);
   return respuesta.json();
 }

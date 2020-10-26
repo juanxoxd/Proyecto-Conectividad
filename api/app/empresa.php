@@ -2,10 +2,12 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class empresa extends Model
+class Empresa extends Model
 {
+    use HasFactory;
     protected $table = "empresa";
     protected $primaryKey = 'Codigo';
     public $timestamps = false;

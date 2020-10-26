@@ -1,371 +1,354 @@
 <template>
-  <v-main>
-    <v-row align="center" class="pa-5 align-center">
-      <v-col cols="4">
-        <v-alert
-          v-model="alert"
-          text
-          prominent
-          type="error"
-          icon="mdi-cloud-alert"
-          close-text="Close Alert"
-          dismissible
-          >Ocurrio un error.</v-alert
-        >
-      </v-col>
-    </v-row>
+  <v-container style="padding: 0px ">
     <v-row class="pa-5 align-center">
       <v-col>
         <v-btn
           fab
           large
           dark
-          color="blue darken-3"
-          @click="dialogEjemplo = true"
+          color="blue"
+          @click="dialog = true"
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-col>
       <v-col cols="11">
-        <h2 class="font-weight-regular text-center">
-          Mantenimiento de Entidad
+        <h2 class="font-weight-bold text-center">
+          Mantenimiento de Entidad Bancaria
         </h2>
       </v-col>
     </v-row>
-    <v-dialog v-model="dialogEjemplo" persistent scrollable max-width="60vw">
+    <v-dialog v-model="dialog" persistent scrollable max-width="60vw">
       <v-card>
-        <v-card-title class="headline indigo darken-4">
-          <span v-if="edit" class="headline" style="color: white"
-            >Editar Entidad</span
-          >
-          <span v-else-if="ver" class="headline" style="color: white"
-            >Ver Entidad</span
-          >
-          <span v-else class="headline" style="color: white"
-            >Nueva Entidad Financiera</span
-          >
+        <v-card-title class="indigo darken-4">
+            <span class="headline" style="color: white">{{ formTitle }}</span>
         </v-card-title>
+
         <v-card-text>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-row>
-              <v-col cols="6">
-                <v-text-field
-                  :disabled="ver"
-                  v-model="RazonSocial"
-                  :rules="[fieldRules.required, fieldRules.validateRazonSocial]"
-                  label="Razón Social"
-                  prepend-icon="mdi-domain"
-                  required
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  :disabled="ver"
-                  v-model="Siglas"
-                  :rules="[fieldRules.required, fieldRules.validateSiglas]"
-                  label="Siglas Entidad"
-                  maxlength="11"
-                  prepend-icon="mdi-domain"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
+              <v-col cols="12" sm="8">
+                    <v-text-field
+                    v-model="RazonSocial"
+                    label="Razon Social *"
+                    :rules="[fieldRules.required]"
+                    prepend-icon="mdi-domain"
+                    required
+                    ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="4">
+                    <v-text-field
+                    v-model="Siglas"
+                    label="Siglas *"
+                    :rules="[fieldRules.required]"
+                    prepend-icon="mdi-domain"
+                    required
+                    ></v-text-field>
+                </v-col>                
+            </v-row>            
           </v-form>
+          <span class="red--text">(*) Campos Obligatorios</span>
         </v-card-text>
+
         <v-card-actions>
+        
           <v-spacer></v-spacer>
           <v-btn
-            v-if="!ver"
             color="indigo darken-4"
             text
-            @click="(dialogEjemplo = false), limpiar()"
-            >Cerrar</v-btn
+            @click="(dialog = false), limpiar()"
+            >Cancelar</v-btn
           >
           <v-btn
-            v-if="!ver"
             :loading="saveLoading"
             :disabled="saveLoading"
             color="indigo darken-4"
             class="ma-2 white--text"
             depressed
             @mousedown="validate"
-            @click="executeEventClick"
+            @click="guardar"
             >Guardar</v-btn
-          >
-          <v-btn
-            v-if="ver"
-            color="indigo darken-4"
-            text
-            @click="(dialogEjemplo = false), limpiar()"
-            >Cerrar</v-btn
           >
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <!-- <v-tabs>
-      <v-tab>Lista</v-tab>
-
-      <v-tab-item>
-        <mostrar-entidades
-          :headers="headers"
-          :options="options"
-          :withOptions="true"
-          ref="empresaTable"
-          entity="tablaentidadbancaria"
-        />
-      </v-tab-item>
-    </v-tabs> -->
-    <v-row class="justify-center">
-      <v-col cols="11">
-        <v-card>
-          <v-card-title>
+    <v-card>
+      <v-row>
+        <v-card-title>
             <v-spacer></v-spacer>
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Buscar"
-              single-line
-              hide-details
-            ></v-text-field>
-          </v-card-title>
-          <v-card-text>
-            <v-data-table
-              :loading="tableLoading"
-              :headers="headers"
-              :items="entidades"
-              :search="search"
-              >
-              <template v-slot:[`item`]="{ item }">
-                <tr v-bind:class="item.Vigencia?'activo':'desactivo'">
-                  <td>{{ item.indice }}</td>
-                  <td>{{ item.RazonSocial }}</td>
-                  <td>{{ item.Siglas }}</td>
-                  <td>
-                    <v-icon class="mr-2" @click="showEditEntidad(item)">mdi-pencil</v-icon>
-                    <v-icon class="mr-2" @click="entidadVigenciaEntidad(item)" :color="item.Vigencia?'error':'success'">
-                      {{item.Vigencia? "mdi-close-circle-outline": "mdi-checkbox-marked-circle-outline"}}
-                    </v-icon>
-                  </td>
-                </tr>
+        </v-card-title>
+      <v-col cols="12" class="pt-0">
+        <v-data-table
+          :headers="headers"
+          :items="entidadesBancarias"          
+          :item-class="itemFilaColor"
+        >
+          <template v-slot:[`item.index`]="{ item }">
+            {{ entidadesBancarias.indexOf(item) + 1 }}
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mr-2"
+                  color="blue-grey"
+                  @click="leer(item)"
+                  >mdi-border-color
+                </v-icon>
               </template>
-            </v-data-table>
-          </v-card-text>
-        </v-card>
+              <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mr-2"
+                  :color="item.Vigencia ? 'red lighten-1' : 'green'"
+                  @click="cambiarVigencia(item)"
+                  >{{
+                    item.Vigencia
+                      ? "mdi-close-circle-outline"
+                      : "mdi-checkbox-marked-circle-outline"
+                  }}</v-icon
+                >
+              </template>
+              <span>{{ item.Vigencia ? "Dar de baja" : "Dar de alta" }}</span>
+            </v-tooltip>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
-  </v-main>
+    </v-card>
+    
+  </v-container>
 </template>
 
 <script>
-import { del, get, put, post, patch } from "../api/api";
+import { get, post, put, patch } from "../api/api";
 import Swal from "sweetalert2";
 
 export default {
-  components: {},
   data() {
     return {
-      tableLoading: true,
       edit: false,
-      ver: false,
-      alert: false,
       valid: true,
       saveLoading: false,
-      dialogEjemplo: false,
+      dialog: false,
       fieldRules: {
-        required: (v) => !!v || "Campo requerido",
-        validateRazonSocial: (v) => (v.length > 7) || "La Razón Social debe contener al menos 7 caracteres",
-        validateSiglas: (v) => (v.length > 2) || "La Razón Social debe contener al menos 2 caracteres",
-        validateRuc: (v) => v.length == 11 || "RUC incorrecto.",
+        required: (v) => !!v || "Campo requerido",       
       },
       headers: [
-        {
-          text: "N°",
-          align: "start",
-          sortable: false,
-          value: "indice",
-          width: "10%",
-          
+        { 
+        text: "Nº", 
+        value: "index", 
+        width: "10%", 
+        class:'light blue darken-4 white--text', 
+        sortable: false  
         },
-        { text: "Siglas" ,value: "Siglas", width: "20%"},
-        { text: "Razon Social", value: "RazonSocial", width: "30%" },        
-        { text: "Acciones", value: "actions", width: "20%" },
+        {
+        text: "Razon Social",
+        align: "start",
+        value: "RazonSocial",
+        class:'light blue darken-4 white--text', 
+        sortable: false,
+        },
+        { 
+        text: "Siglas ", 
+        value: "Siglas", 
+        class:'light blue darken-4 white--text', 
+        sortable: false, },
+        { 
+        text: "Acciones", 
+        value: "actions",
+        width: "20%",
+        class:'light blue darken-4 white--text',  
+        sortable: false,   
+        },
       ],
       options: [
         {
           name: "Editar",
           icon: "mdi-pencil",
-          function: this.showEditEntidad,
+          function: this.leer,
         },
         {
-          name: "Eliminar",
-          icon: "mdi-close-circle-outline",
-          function: this.entidadVigenciaEntidad,
+          name: "CambiarVigencia",
+          icon: "mdi-check-box-outline",
+          function: this.cambiarVigencia,
         },
       ],
-      entidades: [],
-      search: "",
+      entidadesBancarias: [],
       RazonSocial: "",
-      Siglas: "",      
-
-      /*Fin de Cosas */
+      Siglas: "",
+      indiceEditar: -1,
     };
   },
-  methods: {
-    fetchData() {
-      this.tableLoading = true;
-      get("tablaentidadbancaria").then((data) => {
-        this.tableLoading = false;
-        this.entidades = data;
-      });
+
+  computed: {
+    formTitle() {
+      return this.indiceEditar === -1 ? "Nueva Entidad Bancaria" : "Editar Entidad Bancaria";
     },
+  },
+
+  methods: {
     validate() {
       this.$refs.form.validate();
     },
+
     limpiar() {
-      /*Cosas*/
-      this.Siglas = "";
-      /*Fin de Cosas */
       this.RazonSocial = "";
-      this.ver = false;
-      this.edit = false;
+      this.Siglas = "";
+      this.indiceEditar=-1;
+      this.$refs.form.resetValidation();
     },
-    executeEventClick() {
-      if (this.edit === false) {
-        this.registerEntidad();
+    
+    guardar() {
+      if (this.indiceEditar === -1) {
+        this.registrar();
       } else {
-        this.editEntidad();
+        this.editar();
       }
     },
-    assembleEntidad() {
-      // let form = new FormData();
-      // form.append("RazonSocial", this.RazonSocial);
-      // form.append("Siglas", this.Siglas);
-      // return form;
-      console.log(this.Codigo);
+
+    getEntidadBancaria() {
       return {
-        Codigo: this.Codigo,
         RazonSocial: this.RazonSocial,
         Siglas: this.Siglas,
       };
     },
 
-    registerEntidad() {
+    registrar() {
       if (this.valid == false) return;
       this.saveLoading = true;
-      post("entidadesbancarias", this.assembleEntidad()).then(
-        () => {
+      post("entidadesbancarias", this.getEntidadBancaria()).then(() => {
+        this.saveLoading = false;
+        this.dialog = false;
+        this.limpiar();
+        Swal.fire({
+            position: "top-center",
+          title: "Sistema",
+          text: "Entidad Bancaria registrada exitosamente.",
+          icon: "success",
+          confirmButtonText: "OK",
+          timer: 2500,
+        });
+        this.refrescarEntidadBancaria();
+      })
+      .catch(() => {
           Swal.fire({
             position: "top-center",
             title: "Sistema",
-            text: "Entidad registrada !",
-            icon: "success",
-            confirmButtonText: "Ok",
+            text: "No se registró Entidad Bancaria",
+            icon: "error",
+            confirmButtonText: "OK",
             timer: 2500,
           });
           this.saveLoading = false;
-          this.dialogEjemplo = false;
-          this.fetchData();
-          this.limpiar();
-          this.actualizarEmpresas();
-        }
-      );
+        });
     },
-    // putNew(){
-    //   let form = new FormData();
-    //   form.append("RazonSocial", this.RazonSocial);
-    //   form.append("Siglas", this.Siglas);
-    //   form.append("id", this.editId);
-    //   return form;
-    // },
-    editEntidad() {
+
+    editar() {
       if (this.valid == false) return;
       this.saveLoading = true;
-      put(
-        "entidadesbancarias/" + this.editId,
-        this.assembleEntidad()
-      )
+      put("entidadesbancarias/" + this.codigoEditar, this.getEntidadBancaria())
         .then(() => {
+          this.saveLoading = false;
+          this.codigoEditar = null;
+          this.dialog = false;
+          this.limpiar();
           Swal.fire({
             position: "top-center",
             title: "Sistema",
-            text: "Entidad actualizada !",
+            text: "Entidad Bancaria actualizado exitosamente.",
             icon: "success",
-            confirmButtonText: "Ok",
+            confirmButtonText: "OK",
+            timer: 2500,
+          });
+          this.refrescarEntidadBancaria();
+        })
+        .catch(() => {
+          Swal.fire({
+            position: "top-center",
+            title: "Sistema",
+            text: "No se actualizó Entidad Bancaria",
+            icon: "error",
+            confirmButtonText: "OK",
             timer: 2500,
           });
           this.saveLoading = false;
-          this.editId = null;
-          this.dialogEjemplo = false;
-          this.fetchData();
-          this.limpiar();
-        })
-        .catch(() => {
-          this.alert = true;
         });
     },
-    showEditEntidad(entidad) {
-      this.edit = true;
-      this.editId = entidad.Codigo;
-      this.mostrarEmpresa(entidad.Codigo).then(() => {
-        this.dialogEjemplo = true;
+
+    leer(entidadBancaria) {
+      this.indiceEditar = entidadBancaria.Codigo
+      this.codigoEditar = entidadBancaria.Codigo;
+      this.mostrarEntidadBancaria(entidadBancaria.Codigo).then(() => {
+        this.dialog = true;
       });
     },
-    verEmpresa(empresa) {
-      this.ver = true;
-      this.mostrarEmpresa(empresa.Codigo).then(() => {
-        this.dialogEjemplo = true;
-      });
+
+    async mostrarEntidadBancaria(codigo) {
+      const entidadBancaria = await get("entidadesbancarias/" + codigo);
+      this.RazonSocial = entidadBancaria.RazonSocial;
+      this.Siglas = entidadBancaria.Siglas;
     },
-    deleteEmpresa(empresa) {
-      del("empresa/" + empresa.Codigo)
-        .then(() => {
-          this.$refs.empresaTable.fetchData();
-          this.actualizarEmpresas();
+
+    cambiarVigencia(entidadBancaria) {
+      patch("entidadesbancarias/" + entidadBancaria.Codigo)
+        .then((data) => {
+            if(data.Vigencia == 1){
+                Swal.fire({
+                position: "top-center",
+                title: "Sistema",
+                text: "Entidad Bancaria dada de alta exitosamente",
+                icon: "success",
+                confirmButtonText: "Ok",
+                timer: 2500,
+            });
+            }else{
+            Swal.fire({
+                position: "top-center",
+                title: "Sistema",
+                text: "Entidad Bancaria dada de baja exitosamente",
+                icon: "success",
+                confirmButtonText: "Ok",
+                timer: 2500,
+            });
+            }
+            this.refrescarEntidadBancaria();
         })
         .catch(() => {
-          this.alert = true;
+            Swal.fire({
+              position: "top-center",
+              title: "Sistema",
+              text: "No se actualizó Entidad Bancaria",
+              icon: "error",
+              confirmButtonText: "OK",
+              timer: 2500,
+            });
+            this.saveLoading = false;
         });
     },
-    entidadVigenciaEntidad(empresa) {
-      patch("entidadBancaria/" + empresa.Codigo)
-        .then(() => {
-          this.fetchData();
-          this.actualizarEmpresas();
-        })
-        .catch(() => {
-          this.alert = true;
-        });
-    },
-    actualizarEmpresas() {
-      get("tablaentidadbancaria").then((data) => {
-        this.entidades = data;
+
+    refrescarEntidadBancaria() {
+      get("entidadesbancarias").then((data) => {
+        this.entidadesBancarias = data;
       });
     },
-    async mostrarEmpresa(codigo) {
-      const empresa = await get("entidadesbancarias/" + codigo);
-      this.Siglas = empresa.Siglas;
-      this.RazonSocial = empresa.RazonSocial;
-    },
-    mostrarEntidad() {
-      get("tablaentidadbancaria").then((data) => {
-        this.entidades = data;
-      });
+    
+
+    itemFilaColor: function (item) {
+      return item.Vigencia ? "black--text" : "red--text";
     },
   },
-  mounted() {
-    this.mostrarEntidad();
-  },
-  created() {    
-    this.fetchData();
+  created() {
+    this.refrescarEntidadBancaria();
   },
 };
 </script>
-<style>
-  tr.desactivo{
-    color: red;
-  }
-  th{
-    background: #01579B;
-    color: white;
-  }
-</style>
+
+<style></style>
+

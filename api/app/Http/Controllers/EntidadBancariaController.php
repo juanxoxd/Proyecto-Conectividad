@@ -2,60 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\entidadBancaria;
-use Illuminate\Support\Facades\Validator;
+use App\EntidadBancaria;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 class EntidadBancariaController extends Controller
 {
-    public function inicio()
+    public function listar()
     {
-        $entidadBancaria = DB::table('entidadBancaria as eB')
-            ->select('eB.RazonSocial', 'eB.Siglas')
-            ->where('eB.Vigencia', '=', 1)
+        $entidadBancaria = DB::table('entidadbancaria as eb')
+            ->select('eb.Codigo','eb.RazonSocial', 'eb.Siglas','eb.Vigencia')
             ->get();
         return response()->json($entidadBancaria, 200);
     }
-    public function mostrarentidadesbancarias()
+
+    public function leer($id)
     {
-        return entidadBancaria::all();
+        return EntidadBancaria::find($id);
     }
 
-    public function tablaentidadbancaria()
-    {
-        $entidadBancaria = entidadBancaria::all('Codigo', 'RazonSocial', 'Siglas','Vigencia');
-        $count  = 1;
-        foreach ($entidadBancaria  as $aux) {
-            $aux->indice = $count;
-            $count ++;
-        }
-        return $entidadBancaria;        
-    }
-
-    public function mostrar($id)
-    {
-        return entidadBancaria::find($id);
-    }
-    
     public function registrar(Request $request)
     {
         $validacion = Validator::make($request->all(), [
-            'RazonSocial' => 'required|max:100',
-            'Siglas' => 'required|unique:entidadBancaria|max:10',           
+            'RazonSocial' => 'required|max:90',
+            'Siglas' => 'required|unique:EntidadBancaria|max:15',
         ], [
             'unique' => ':attribute ya se encuentra registrado',
             'required' => ':attribute es obligatorio',
-            'max' => ':attribute llego al lìmite de letras.'
+            'max' => ':attribute llegó al limite de letras'
         ]);
-
         if ($validacion->fails()) {
             return response()->json($validacion->errors()->first(), 400);
         }
-        $entidadBancaria = new entidadBancaria();
+
+        $entidadBancaria = new EntidadBancaria();
+
         $entidadBancaria->RazonSocial = $request->get('RazonSocial');
         $entidadBancaria->Siglas = $request->get('Siglas');
-        $entidadBancaria->Vigencia = 1;
+
         $entidadBancaria->save();
         return response()->json($entidadBancaria, 201);
     }
@@ -63,25 +48,26 @@ class EntidadBancariaController extends Controller
     public function actualizar(Request $request, $id)
     {
         $validacion = Validator::make($request->all(), [
-            'RazonSocial' => 'required|max:100',
-            'Siglas' => 'required|max:10',
+            'RazonSocial' => 'required|max:90',
+            'Siglas' => 'required|unique:EntidadBancaria|max:15',
         ]);
         if ($validacion->fails()) {
             return response()->json($validacion, 400);
         }
-        $entidadBancaria = entidadBancaria::findOrFail($id);
+        $entidadBancaria = EntidadBancaria::findOrFail($id);
         $entidadBancaria->RazonSocial = $request->get('RazonSocial');
         $entidadBancaria->Siglas = $request->get('Siglas');
         $entidadBancaria->save();
         return response()->json($entidadBancaria, 200);
     }
-    public function entidadVigencia($id)
-    {
-        $empresa = entidadBancaria::findOrFail($id);
-        $empresa->Vigencia = !$empresa->Vigencia;
-        $empresa->save();
 
-        return response()->json($empresa, 200);
+    public function cambiarVigencia($id)
+    {
+        $entidadBancaria = EntidadBancaria::findOrFail($id);
+        $entidadBancaria->Vigencia = !$entidadBancaria->Vigencia;
+        $entidadBancaria->save();
+
+        return response()->json($entidadBancaria, 200);
     }
-    
+
 }

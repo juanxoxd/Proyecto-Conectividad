@@ -2,17 +2,17 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EntidadBancaria extends Model
 {
-    protected $table = "entidadBancaria";
+    protected $table = "entidadbancaria";
     protected $primaryKey = 'Codigo';
     public $timestamps = false;
     protected $fillable = [
         'Codigo',
         'RazonSocial',
         'Siglas',
-        'Vigencia',
-    ];
+        'Vigencia'];
 }

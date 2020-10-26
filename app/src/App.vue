@@ -9,7 +9,7 @@
     <v-navigation-drawer v-model="drawer" app temporary>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title class="title">Aplicación</v-list-item-title>
+          <v-list-item-title class="title">Aplicacion</v-list-item-title>
           <v-list-item-subtitle></v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -26,6 +26,76 @@
             <v-list-item-title>Inicio</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item to="/empresa" link>
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Empresa</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/mediopago" link>
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Medio de Pago</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/cuenta_bancaria" link>
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Cuenta Bancaria</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/usuario" link>
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Usuario</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/personal" link>
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Personal</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/documentopersonal">
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Documento Personal</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item to="/sistemadepensiones" link>
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Sistema De Pensiones</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item to="/entidadBancaria" link>
           <v-list-item-icon>
             <v-icon>mdi-view-dashboard</v-icon>
@@ -35,6 +105,7 @@
             <v-list-item-title>Entidad Bancaria</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        
       </v-list>
     </v-navigation-drawer>
     <v-main>

@@ -2,35 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\empresa;
-use Illuminate\Support\Facades\Validator;
+use App\Empresa;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
-class empresaController extends Controller
+class EmpresaController extends Controller
 {
-    public function inicio()
+    public function listar()
     {
-        $empresa = DB::table('empresa as e')
-            ->select('e.RUC', 'e.RazonSocial', 'e.Correo', 'e.Codigo')
-            ->where('e.Vigencia', '=', 1)
-            ->get();
-        return response()->json($empresa, 200);
+        return Empresa::all('Codigo', 'RUC', 'RazonSocial', 'Correo', 'Vigencia');
     }
 
-    public function mostrarEmpresas()
+    public function leer($id)
     {
-        return empresa::all();
-    }
-
-    public function tablaEmpresa()
-    {
-        return empresa::all('Codigo', 'RUC', 'RazonSocial', 'Correo', 'Vigencia');
-    }
-
-    public function mostrar($id)
-    {
-        return empresa::find($id);
+        return Empresa::find($id);
     }
 
     public function registrar(Request $request)
@@ -47,7 +32,7 @@ class empresaController extends Controller
         if ($validacion->fails()) {
             return response()->json($validacion->errors()->first(), 400);
         }
-        $empresa = new empresa();
+        $empresa = new Empresa();
 
         $empresa->RazonSocial = $request->get('RazonSocial');
         $empresa->RUC = $request->get('RUC');
@@ -83,7 +68,7 @@ class empresaController extends Controller
         if ($validacion->fails()) {
             return response()->json($validacion, 400);
         }
-        $empresa = empresa::findOrFail($id);
+        $empresa = Empresa::findOrFail($id);
         $empresa->RazonSocial = $request->get('RazonSocial');
         $empresa->RUC = $request->get('RUC');
         $empresa->Facebook = $request->get('Facebook');
@@ -102,18 +87,9 @@ class empresaController extends Controller
         return response()->json($empresa, 200);
     }
 
-    public function eliminar($id)
+    public function cambiarVigencia($id)
     {
-        $empresa = empresa::findOrFail($id);
-        $empresa->Vigencia = 0;
-        $empresa->save();
-
-        return response()->json($empresa, 200);
-    }
-
-    public function entidadVigencia($id)
-    {
-        $empresa = empresa::findOrFail($id);
+        $empresa = Empresa::findOrFail($id);
         $empresa->Vigencia = !$empresa->Vigencia;
         $empresa->save();
 

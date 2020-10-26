@@ -1,33 +1,19 @@
 <template>
-  <v-content>
-    <v-row align="center" class="pa-5 align-center">
-      <v-col cols="4">
-        <v-alert
-          v-model="alert"
-          text
-          prominent
-          type="error"
-          icon="mdi-cloud-alert"
-          close-text="Close Alert"
-          dismissible
-          >Ocurrio un error.</v-alert
-        >
-      </v-col>
-    </v-row>
+  <v-container style="padding: 0px ">
     <v-row class="pa-5 align-center">
       <v-col>
         <v-btn
           fab
           large
           dark
-          color="blue darken-3"
+          color="blue"
           @click="dialogEjemplo = true"
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-col>
       <v-col cols="11">
-        <h2 class="font-weight-regular text-center">
+        <h2 class="font-weight-bold text-center">
           Mantenimiento de Empresa
         </h2>
       </v-col>
@@ -38,9 +24,6 @@
           <span v-if="edit" class="headline" style="color: white"
             >Editar Empresa</span
           >
-          <span v-else-if="ver" class="headline" style="color: white"
-            >Ver Empresa</span
-          >
           <span v-else class="headline" style="color: white"
             >Nueva Empresa</span
           >
@@ -50,20 +33,18 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="RazonSocial"
                   :rules="[fieldRules.required]"
-                  label="Razón Social"
+                  label="Razón Social *"
                   prepend-icon="mdi-domain"
                   required
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="RUC"
                   :rules="[fieldRules.required, fieldRules.validateRuc]"
-                  label="RUC"
+                  label="RUC *"
                   type="number"
                   maxlength="11"
                   prepend-icon="mdi-domain"
@@ -74,7 +55,6 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="Facebook"
                   label="Facebook"
                   prepend-icon="mdi-facebook-box"
@@ -82,7 +62,6 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="Instagram"
                   label="Instagram"
                   prepend-icon="mdi-instagram"
@@ -92,7 +71,6 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="Youtube"
                   label="Youtube"
                   prepend-icon="mdi-youtube"
@@ -100,7 +78,6 @@
               </v-col>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="Whatsapp"
                   label="Whatsapp"
                   prepend-icon="mdi-whatsapp"
@@ -110,15 +87,14 @@
             <v-row>
               <v-col cols="6">
                 <v-text-field
-                  :disabled="ver"
                   v-model="Correo"
                   :rules="[fieldRules.required, fieldRules.email]"
-                  label="Correo"
+                  label="Correo *"
                   prepend-icon="mdi-email"
                   required
                 ></v-text-field>
               </v-col>
-              <v-col v-if="!ver" cols="6">
+              <v-col cols="6">
                 <v-file-input
                   v-model="Logo"
                   label="Logo"
@@ -126,23 +102,22 @@
                   accept="image/*"
                 ></v-file-input>
               </v-col>
-              <v-col v-else cols="12">
+              <!-- <v-col v-else cols="12">
                 <v-img :src="Logo"></v-img>
-              </v-col>
+              </v-col> -->
             </v-row>
           </v-form>
+          <span class="red--text">(*) Campos Obligatorios</span>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            v-if="!ver"
             color="indigo darken-4"
             text
             @click="(dialogEjemplo = false), limpiar()"
-            >Cerrar</v-btn
+            >Cancelar</v-btn
           >
           <v-btn
-            v-if="!ver"
             :loading="saveLoading"
             :disabled="saveLoading"
             color="indigo darken-4"
@@ -152,84 +127,72 @@
             @click="executeEventClick"
             >Guardar</v-btn
           >
-          <v-btn
-            v-if="ver"
-            color="indigo darken-4"
-            text
-            @click="(dialogEjemplo = false), limpiar()"
-            >Cerrar</v-btn
-          >
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-tabs>
-      <v-tab>Tabla 1</v-tab>
-      <v-tab>Tabla 2</v-tab>
-      <v-tab-item>
-        <tables-mostrar
+    <v-card>
+      <v-row>
+        <v-card-title>
+            <v-spacer></v-spacer>
+        </v-card-title>
+      <v-col cols="12" class="pt-0">
+        <v-data-table
           :headers="headers"
-          :options="options"
-          :withOptions="true"
-          ref="empresaTable"
-          entity="empresas"
-        />
-      </v-tab-item>
-      <v-tab-item>
-        <v-row class="justify-center">
-          <v-col cols="11">
-            <v-card>
-              <v-card-title>
-                <v-spacer></v-spacer>
-                <v-text-field
-                  v-model="search"
-                  append-icon="mdi-magnify"
-                  label="Buscar"
-                  single-line
-                  hide-details
-                ></v-text-field>
-              </v-card-title>
-              <v-data-table
-                :headers="headers2"
-                :items="empresas"
-                :search="search"
-              >
-                <template v-slot:[`item.Vigencia`]="{ item }">
-                  <v-chip
-                    :color="item.Vigencia ? 'green' : 'red'"
-                    dark
-                  ></v-chip>
-                </template>
-                <template v-slot:[`item.actions`]="{ item }">
-                  <v-icon class="mr-2" @click="verEmpresa(item)"
-                    >mdi-eye</v-icon
-                  >
-                  <v-icon class="mr-2" @click="entidadVigenciaEmpresa(item)">{{
+          :items="empresas"
+          :search="search"
+          :item-class="itemFilaColor"
+        >
+          <template v-slot:[`item.index`]="{ item }">
+            {{ empresas.indexOf(item) + 1 }}
+          </template>
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mr-2"
+                  color="blue-grey"
+                  @click="showEditEmpresa(item)"
+                  >mdi-border-color
+                </v-icon>
+              </template>
+              <span>Editar</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                  v-bind="attrs"
+                  v-on="on"
+                  class="mr-2"
+                  :color="item.Vigencia ? 'red lighten-1' : 'green'"
+                  @click="deleteEmpresa(item)"
+                  >{{
                     item.Vigencia
-                      ? "mdi-do-not-disturb"
-                      : "mdi-check-box-outline"
-                  }}</v-icon>
-                </template>
-              </v-data-table>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-tab-item>
-    </v-tabs>
-  </v-content>
+                      ? "mdi-close-circle-outline"
+                      : "mdi-checkbox-marked-circle-outline"
+                  }}</v-icon
+                >
+              </template>
+              <span>{{ item.Vigencia ? "Dar de baja" : "Dar de alta" }}</span>
+            </v-tooltip>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+    </v-card>
+    
+  </v-container>
 </template>
 
 <script>
-import { del, get, enviarConArchivos, patch } from "../api/api";
-import { logos } from "../api/config";
-
+import { get, enviarConArchivos, patch } from "../api/api";
+// import { logos } from "../api/config";
+import Swal from "sweetalert2";
 export default {
-  components: {
-    TablesMostrar: () => import("../components/TablesMostrar"),
-  },
   data() {
     return {
       edit: false,
-      ver: false,
       alert: false,
       valid: true,
       saveLoading: false,
@@ -243,40 +206,17 @@ export default {
         validateRuc: (v) => v.length == 11 || "RUC incorrecto.",
       },
       headers: [
+        { text: "Nº", value: "index", width: "10%", class:'light blue darken-4 white--text' },
         {
           text: "RUC",
           align: "start",
           sortable: false,
           value: "RUC",
-          width: "20%",
+          width: "20%", class:'light blue darken-4 white--text'
         },
-        { text: "Razon Social", value: "RazonSocial", width: "30%" },
-        { text: "Correo", value: "Correo", width: "40%" },
-        { text: "Acciones", value: "actions", width: "10%" },
-      ],
-      headers2: [
-        {
-          text: "RUC",
-          align: "start",
-          sortable: false,
-          value: "RUC",
-        },
-        { text: "Razon Social", value: "RazonSocial" },
-        { text: "Correo", value: "Correo" },
-        { text: "Vigencia", value: "Vigencia" },
-        { text: "Acciones", value: "actions" },
-      ],
-      options2: [
-        {
-          name: "Ver",
-          icon: "mdi-eye",
-          function: this.showEditEmpresa,
-        },
-        {
-          name: "Cambiar vigencia",
-          icon: "mdi-check-box-outline",
-          function: this.deleteEmpresa,
-        },
+        { text: "Razon Social", value: "RazonSocial", width: "25%", class:'light blue darken-4 white--text' },
+        { text: "Correo", value: "Correo", width: "30%", class:'light blue darken-4 white--text' },
+        { text: "Acciones", value: "actions", width: "15%", class:'light blue darken-4 white--text' },
       ],
       options: [
         {
@@ -285,12 +225,12 @@ export default {
           function: this.showEditEmpresa,
         },
         {
-          name: "Eliminar",
-          icon: "mdi-pencil",
+          name: "Cambiar vigencia",
+          icon: "mdi-check-box-outline",
           function: this.deleteEmpresa,
         },
       ],
-      empresas: "",
+      empresas: [],
       search: "",
       RUC: "",
       RazonSocial: "",
@@ -315,8 +255,8 @@ export default {
       this.Whatsapp = "";
       this.Correo = "";
       this.Logo = null;
-      this.ver = false;
       this.edit = false;
+      this.$refs.form.resetValidation();
     },
     executeEventClick() {
       if (this.edit === false) {
@@ -324,6 +264,9 @@ export default {
       } else {
         this.editEmpresa();
       }
+    },
+    itemFilaColor: function (item) {
+      return item.Vigencia ? "black--text" : "red--text";
     },
     assembleEmpresa() {
       let form = new FormData();
@@ -337,15 +280,19 @@ export default {
       form.append("Logo", this.Logo);
       return form;
     },
-
     registerEmpresa() {
       if (this.valid == false) return;
       this.saveLoading = true;
       enviarConArchivos("empresas", this.assembleEmpresa()).then(() => {
         this.saveLoading = false;
         this.dialogEjemplo = false;
-        this.$refs.empresaTable.fetchData();
         this.limpiar();
+        Swal.fire({
+          title: "Sistema",
+          text: "Empresa registrada correctamente.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
         this.actualizarEmpresas();
       });
     },
@@ -357,8 +304,15 @@ export default {
           this.saveLoading = false;
           this.editId = null;
           this.dialogEjemplo = false;
-          this.$refs.empresaTable.fetchData();
+          // this.$refs.empresaTable.fetchData();
           this.limpiar();
+          Swal.fire({
+            title: "Sistema",
+            text: "Empresa actualizada correctamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+          this.actualizarEmpresas();
         })
         .catch(() => {
           this.alert = true;
@@ -371,34 +325,21 @@ export default {
         this.dialogEjemplo = true;
       });
     },
-    verEmpresa(empresa) {
-      this.ver = true;
-      this.mostrarEmpresa(empresa.Codigo).then(() => {
-        this.dialogEjemplo = true;
-      });
-    },
     deleteEmpresa(empresa) {
-      del("empresa/" + empresa.Codigo)
-        .then(() => {
-          this.$refs.empresaTable.fetchData();
-          this.actualizarEmpresas();
-        })
-        .catch(() => {
-          this.alert = true;
-        });
-    },
-    entidadVigenciaEmpresa(empresa) {
       patch("empresa/" + empresa.Codigo)
         .then(() => {
-          this.$refs.empresaTable.fetchData();
+          Swal.fire({
+            title: "Sistema",
+            text: "Empresa actualizada correctamente.",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
           this.actualizarEmpresas();
         })
-        .catch(() => {
-          this.alert = true;
-        });
+        .catch(() => {});
     },
     actualizarEmpresas() {
-      get("tablaEmpresa").then((data) => {
+      get("empresas").then((data) => {
         this.empresas = data;
       });
     },
@@ -411,7 +352,7 @@ export default {
       this.Youtube = empresa.Youtube;
       this.Whatsapp = empresa.Whatsapp;
       this.Correo = empresa.Correo;
-      this.Logo = this.ver ? logos + empresa.Logo : null;
+      // this.Logo = this.ver ? logos + empresa.Logo : null;
     },
   },
   created() {
@@ -420,5 +361,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>
